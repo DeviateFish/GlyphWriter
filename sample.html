@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <script type="text/javascript" src="glyphwriter.js"></script>
+</head>
+
+<body>
+  <canvas id="surface" width="330" height="330"></canvas>
+  <div>
+    <div>
+      <input id="radius" type="text" value="150">
+      <label for="radius">Radius</label>
+    </div>
+    <div>
+      <input id="points" type="text" value="6, 0, 3, 7, 8">
+      <label for="points">Glyph string (1,2,3 etc)</label>
+    </div>
+    <div>
+      <input id="draw" type="button" value="Draw">
+      <input id="export" type="button" value="Export">
+    </div>
+    <div>
+      <input id="reset" type="button" value="Reset">
+    </div>
+  </div>
+  <script type="text/javascript">
+    (function () {
+      var canvas = document.getElementById('surface'),
+        drawButton = document.getElementById('draw'),
+        radiusInput = document.getElementById('radius'),
+        glyphInput = document.getElementById('points'),
+        resetButton = document.getElementById('reset'),
+        exportButton = document.getElementById('export'),
+        writer = new window.GlyphWriter({
+          canvas: canvas,
+          delimiter: ','
+        });
+
+      drawButton.onclick = function () {
+        writer.resize(radiusInput.value * 1);
+        writer.drawGlyphFromString(glyphInput.value);
+      };
+
+      exportButton.onclick = function () {
+        var url = writer.getDataURL();
+        if (url) {
+          window.open(url);
+        }
+      };
+
+      resetButton.onclick = function () {
+        writer.calibrate();
+      };
+    }());
+  </script>
+</body>
+
+</html>
