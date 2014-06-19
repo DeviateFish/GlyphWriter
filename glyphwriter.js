@@ -15,14 +15,14 @@ window.GlyphWriter = window.GlyphWriter || (function () {
     context.restore();
   };
 
-  var drawVertices = function (context, center, rotation, radius, size, color, inner) {
+  var drawVertices = function (context, center, rotation, radius, size, color, nVertices, skip) {
     var points = [];
     var x, y;
     //context.save();
-    for (var i = 0; i < VERTICES; i++) {
-      if(inner && (i % 3) == 0) continue;
-      x = Math.cos(rotation + (2 * Math.PI * (i + 1) / VERTICES)) * radius + center.x;
-      y = Math.sin(rotation + (2 * Math.PI * (i + 1) / VERTICES)) * radius + center.y;
+    for (var i = 0; i < nVertices; i++) {
+      if(skip && (i % 3) == 0) continue;
+      x = Math.cos(rotation + (2 * Math.PI * (i + 1) / nVertices)) * radius + center.x;
+      y = Math.sin(rotation + (2 * Math.PI * (i + 1) / nVertices)) * radius + center.y;
       points.push({
         x: x,
         y: y
@@ -66,6 +66,7 @@ window.GlyphWriter = window.GlyphWriter || (function () {
     this.delimiter = options.delimiter || '_';
     this.canvas = options.canvas || document.createElement('canvas');
     this.size = this.center = this.ctx;
+    this.oldGrid = options.oldGrid || false;
     this.init();
   };
 
@@ -96,8 +97,15 @@ window.GlyphWriter = window.GlyphWriter || (function () {
       this.ctx.restore();
     }
 
-    points = points.concat(drawVertices(this.ctx, this.center, this.rotation + Math.PI / 6, this.radius, this.radius / 50, this.pointColor));
-    points = points.concat(drawVertices(this.ctx, this.center, this.rotation + Math.PI / 6, Math.round(this.radius / 1.85), this.radius / 50, this.pointColor, true));
+    points = points.concat(drawVertices(this.ctx, this.center, this.rotation + Math.PI / 6, this.radius, this.radius / 50, this.pointColor, VERTICES));
+    if(this.oldGrid)
+    {
+      points = points.concat(drawVertices(this.ctx, this.center, this.rotation + Math.PI / 4, Math.round(this.radius / 1.85), this.radius / 50, this.pointColor, 4, false));
+    }
+    else
+    {
+      points = points.concat(drawVertices(this.ctx, this.center, this.rotation + Math.PI / 6, Math.round(this.radius / 1.85), this.radius / 50, this.pointColor, VERTICES, true));
+    }
     if (this.edgeColor) {
       drawEdges(this.ctx, this.center, this.rotation + Math.PI / 6, Math.round(this.radius * (1.0 + this.spacing)), this.edgeColor);
     }
